@@ -52,7 +52,7 @@ export default function AiToolFinderPage() {
     setLoading(true);
     setSearched(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/ai-tools/finder`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.pulsevian.com/api/v1"}/ai-tools/finder`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ audience, goal, budget }),
