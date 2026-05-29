@@ -13,7 +13,7 @@ export function NewsletterSignup({ segment = "daily_ai_brief" }: { segment?: str
     setMessage(null);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/newsletter/subscribe`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.pulsevian.com/api/v1"}/newsletter/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ email, segment, interests: ["ai_news", "tools", "learning"] }),
