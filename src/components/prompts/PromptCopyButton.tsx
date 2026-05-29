@@ -9,7 +9,7 @@ export function PromptCopyButton({ prompt, id }: { prompt: string; id?: number }
     await navigator.clipboard.writeText(prompt);
     setCopied(true);
     if (id) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/prompts/${id}/copy`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.pulsevian.com/api/v1"}/prompts/${id}/copy`, {
         method: "POST",
         headers: { Accept: "application/json" },
       }).catch(() => {});
