@@ -1,0 +1,6 @@
+{
+  "offers": [
+    { "id": "offer_1", "title": "SmartPhone 2026", "price": "₹14,999", "commission": 250, "url": "https://example.com/track?aff=offer_1", "pros": ["Best battery", "Good camera"] },
+    { "id": "offer_2", "title": "Budget Phone", "price": "₹7,499", "commission": 100, "url": "https://example.com/track?aff=offer_2", "pros": ["Value for money", "Compact"] }
+  ]
+}
