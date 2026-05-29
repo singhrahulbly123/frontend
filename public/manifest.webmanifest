@@ -1,0 +1,46 @@
+{
+  "name": "Global AI News",
+  "short_name": "AI News",
+  "description": "Installable global English AI news app with offline support, fast mobile experience, and swipe-friendly reading.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#050508",
+  "theme_color": "#f97316",
+  "categories": ["news", "productivity", "education"],
+  "shortcuts": [
+    {
+      "name": "For You",
+      "short_name": "For You",
+      "url": "/for-you",
+      "description": "Open your personalized AI feed"
+    },
+    {
+      "name": "Voice Brief",
+      "short_name": "Voice",
+      "url": "/voice-brief",
+      "description": "Listen to today's AI voice brief"
+    },
+    {
+      "name": "Free AI Tools",
+      "short_name": "Tools",
+      "url": "/tools/headline-generator",
+      "description": "Open cached AI utility tools"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/globe.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
