@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.pulsevian.com/api/v1";
 
 function getSessionId(): string | undefined {
   if (typeof window === "undefined") return undefined;
