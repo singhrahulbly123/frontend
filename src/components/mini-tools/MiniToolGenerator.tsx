@@ -40,7 +40,7 @@ export function MiniToolGenerator({ tool, title, description, placeholder, conte
     setItems([]);
     setTips([]);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/mini-tools/${tool}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://api.pulsevian.com/api/v1"}/mini-tools/${tool}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ topic, tone, audience, context, language: "English" }),
