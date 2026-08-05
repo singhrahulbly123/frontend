@@ -1,4 +1,5 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { CheckCircle2, HelpCircle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
@@ -23,17 +24,19 @@ async function getGuide(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getGuide(slug);
+  if (!res) return { title: "Skill guide not found", robots: { index: false, follow: true } };
+  return { title: res.data.title, description: res.data.summary || `Practical ${res.data.category} skill guide and project roadmap.`, alternates: { canonical: `/ai-skills/${slug}` } };
+}
+
 export default async function AiSkillGuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getGuide(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Skill guide not found yet</h1>
-        <Link href="/ai-skills" className="mt-6 inline-flex text-orange-300">Back to AI Skills</Link>
-      </main>
-    );
+    notFound();
   }
 
   const guide = res.data;

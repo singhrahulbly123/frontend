@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "AI Tool Comparisons", description: "Compare AI tools by practical use cases, strengths, limitations, pricing, and audience fit.", alternates: { canonical: "/compare" } };
 
 export const revalidate = 180;
 
@@ -16,26 +19,12 @@ type AiComparison = {
   best_for?: string[];
 };
 
-const starter: AiComparison[] = [
-  {
-    id: 1,
-    title: "ChatGPT vs Gemini: which AI assistant is better?",
-    slug: "chatgpt-vs-gemini-global-users",
-    category: "AI Assistants",
-    tool_a: "ChatGPT",
-    tool_b: "Gemini",
-    winner: "ChatGPT for writing, Gemini for Google ecosystem",
-    summary: "ChatGPT is strong for writing and prompt control, while Gemini is useful for Google ecosystem and multimodal tasks.",
-    best_for: ["Students", "Creators", "Research"],
-  },
-];
-
 async function getComparisons() {
   try {
     const res = await apiFetch<{ data: AiComparison[] }>("/comparisons?per_page=48", { revalidate: 180 });
-    return res.data.length ? res.data : starter;
+    return res.data;
   } catch {
-    return starter;
+    return [];
   }
 }
 
@@ -50,10 +39,11 @@ export default async function ComparePage() {
           Compare AI tools before spending time or money
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400">
-          Practical comparison pages for global users: pricing, best use case, winner, pros/cons, and FAQs.
+          Practical comparison pages for Indian users: pricing, best use case, winner, pros/cons, and FAQs.
         </p>
       </section>
 
+      {!comparisons.length && <div className="rounded-3xl border border-white/10 bg-zinc-950 p-8 text-zinc-300">Comparisons are temporarily unavailable.</div>}
       <section className="grid gap-4 md:grid-cols-2">
         {comparisons.map((item) => (
           <Link key={item.id} href={`/compare/${item.slug}`} className="glass-panel group rounded-3xl border border-white/10 p-6 transition hover:-translate-y-1 hover:border-orange-400/50">

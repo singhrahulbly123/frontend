@@ -1,30 +1,15 @@
+import type { Metadata } from "next";
+import { PolicyPage } from "@/components/content/PolicyPage";
+
+export const metadata: Metadata = { title: "Transparency", description: "Pulsevian transparency on AI assistance, reviews, ratings, and commercial links.", alternates: { canonical: "/transparency" } };
+
 export default function TransparencyPage() {
   return (
-    <section className="mx-auto max-w-5xl px-4 py-16">
-      <div className="glass-panel rounded-3xl border border-white/10 bg-zinc-950/80 p-10">
-        <h1 className="text-4xl font-bold text-white">Transparency</h1>
-        <p className="mt-6 text-zinc-400 leading-8">
-          We believe readers deserve clarity about how our news is produced. This page explains our AI, editorial, and content quality practices.
-        </p>
-        <div className="mt-10 space-y-6 text-zinc-300">
-          <div>
-            <h2 className="text-2xl font-semibold text-white">AI Use</h2>
-            <p className="mt-3">AI helps with research, summarization, and drafting. Final publishing decisions are made by human editors.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Editorial Accountability</h2>
-            <p className="mt-3">We disclose corrections, update history, and the human review status of each article.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Author Credentials</h2>
-            <p className="mt-3">Authors are verified by our editorial team and their expertise is shown on their profile pages.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Source Transparency</h2>
-            <p className="mt-3">We list source references in article metadata and encourage readers to review original reporting.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PolicyPage title="Transparency" intro="Readers should be able to understand what a page is based on, whether AI assisted it, and whether Pulsevian may earn money from a link.">
+      <section><h2>AI assistance</h2><p>AI can support drafting, summarising, translation, or tool output. It does not replace evidence. Pages carrying a human-review or fact-check status should reflect an actual editorial action.</p></section>
+      <section><h2>Ratings and scores</h2><p>We do not show a default star rating or invented review count. Internal opportunity or trust scores are editorial aids, not customer-review ratings, and should explain their criteria.</p></section>
+      <section><h2>Affiliate and sponsored content</h2><p>Affiliate links may generate a commission. Sponsored placement must be labelled, and payment does not guarantee a positive conclusion.</p></section>
+      <section><h2>Limitations</h2><p>AI products change quickly. Dates, version context, sources, and official links help readers judge whether a page is still current.</p></section>
+    </PolicyPage>
   );
 }

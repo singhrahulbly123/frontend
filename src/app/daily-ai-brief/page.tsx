@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Zap } from "lucide-react";
+import { ArrowRight, CalendarDays, ExternalLink, ShieldCheck, Zap } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
 import { WhatsAppShareCard } from "@/components/share/WhatsAppShareCard";
@@ -17,31 +17,19 @@ type DailyBrief = {
   tool_of_day?: { name?: string; url?: string; reason?: string } | null;
   prompts?: string[];
   impact_india?: string | null;
+  source_urls?: string[];
+  reviewed_at?: string | null;
   cta_label?: string | null;
   cta_url?: string | null;
   published_at?: string | null;
 };
 
-const starterBrief: DailyBrief = {
-  id: 1,
-  title: "Today's AI Brief: the global update in 30 seconds",
-  slug: "today-ai-brief",
-  summary: "The most useful global AI updates, business impact, tool of the day, and copy-ready prompts in one place.",
-  key_updates: ["Track major OpenAI, Gemini, Groq, and AI platform updates with global context.", "Add practical tool recommendations for creators, students, and teams.", "Keep every brief short, source-aware, and easy to share."],
-  tool_of_day: { name: "Perplexity", url: "/ai-tools/perplexity", reason: "A simple entry point for source-backed research and cited answers." },
-  prompts: ["Explain [TOPIC] in simple English with examples.", "Create 5 Instagram reel hooks for [TOPIC] in English."],
-  impact_india: "AI adoption is accelerating across global work, education, creator, and small-business workflows.",
-  cta_label: "Explore AI tools",
-  cta_url: "/ai-tools",
-  published_at: new Date().toISOString(),
-};
-
 async function getBrief() {
   try {
     const res = await apiFetch<{ data: DailyBrief }>("/daily-briefs/latest", { revalidate: 60 });
-    return res.data || starterBrief;
+    return res.data || null;
   } catch {
-    return starterBrief;
+    return null;
   }
 }
 
@@ -56,6 +44,15 @@ async function getBriefs() {
 
 export default async function DailyAiBriefPage() {
   const [brief, briefs] = await Promise.all([getBrief(), getBriefs()]);
+  if (!brief) {
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-16">
+        <h1 className="text-4xl font-extrabold text-white">Daily AI Brief</h1>
+        <p className="mt-5 text-zinc-300">Today&apos;s verified brief is not available yet. Please check back shortly.</p>
+        <div className="mt-8"><NewsletterSignup segment="daily_ai_brief" /></div>
+      </main>
+    );
+  }
   const shareText = buildDailyBriefShareText({ ...brief, path: `/daily-ai-brief/${brief.slug}` });
 
   return (
@@ -66,7 +63,10 @@ export default async function DailyAiBriefPage() {
         </p>
         <h1 className="mt-4 max-w-4xl text-4xl font-extrabold leading-tight text-white md:text-6xl">{brief.title}</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-zinc-300">{brief.summary}</p>
-        {brief.published_at && <p className="mt-4 text-sm text-zinc-500">{new Date(brief.published_at).toLocaleDateString("en-US")}</p>}
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-zinc-500">
+          {brief.published_at ? <span>{new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(brief.published_at))}</span> : null}
+          {brief.reviewed_at ? <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-700"><ShieldCheck className="h-4 w-4" /> Human reviewed</span> : null}
+        </div>
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -81,9 +81,22 @@ export default async function DailyAiBriefPage() {
             ))}
           </div>
 
+          {(brief.source_urls || []).length > 0 && (
+            <section className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-emerald-900"><ShieldCheck className="h-5 w-5" /> Sources checked by editor</h2>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {(brief.source_urls || []).map((source, index) => (
+                  <a key={source} href={source} target="_blank" rel="nofollow noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800">
+                    Source {index + 1} <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
           {brief.impact_india && (
             <section className="mt-8">
-              <h2 className="text-2xl font-bold">Global impact</h2>
+              <h2 className="text-2xl font-bold">India impact</h2>
               <p className="mt-4 rounded-2xl border border-white/10 bg-zinc-950 p-5 text-sm leading-7 text-zinc-300">{brief.impact_india}</p>
             </section>
           )}
@@ -120,7 +133,7 @@ export default async function DailyAiBriefPage() {
             </Link>
           )}
           <Link href="/voice-brief" className="block rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-sm font-semibold text-emerald-200">
-            Listen to English voice brief <ArrowRight className="ml-2 inline h-4 w-4" />
+            Listen to the voice brief <ArrowRight className="ml-2 inline h-4 w-4" />
           </Link>
           <WhatsAppShareCard title="Share today's brief" text={shareText} />
         </aside>

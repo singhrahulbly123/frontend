@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { CheckCircle2, HelpCircle, IndianRupee, Star, XCircle } from "lucide-react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { CheckCircle2, ExternalLink, HelpCircle, IndianRupee, ShieldCheck, Star, XCircle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { BookmarkButton } from "@/components/bookmarks/BookmarkButton";
 import { WhatsAppShareCard } from "@/components/share/WhatsAppShareCard";
@@ -7,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { buildToolShareText } from "@/lib/share";
 import { ToolAffiliateCta } from "@/components/affiliates/ToolAffiliateCta";
 import { ToolTrustPanel } from "@/components/differentiators/ToolTrustPanel";
+import { absoluteUrl } from "@/lib/site";
 
 type AiTool = {
   id: number;
@@ -26,7 +29,9 @@ type AiTool = {
   faqs?: { question?: string; answer?: string }[];
   seo_title?: string | null;
   seo_description?: string | null;
-  rating?: number;
+  source_urls?: string[];
+  reviewed_at?: string | null;
+  rating?: number | null;
   trust_score?: number;
   trust_breakdown?: Record<string, number>;
   opportunity_score?: number;
@@ -42,22 +47,50 @@ async function getTool(slug: string) {
   }
 }
 
+function externalUrl(value?: string | null) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const response = await getTool(slug);
+
+  if (!response) {
+    return { title: "AI tool not found", robots: { index: false, follow: true } };
+  }
+
+  const tool = response.data;
+  const title = tool.seo_title || `${tool.name} review, pricing, pros and cons`;
+  const description = tool.seo_description || tool.tagline || tool.description || `Practical review of ${tool.name}.`;
+  const path = `/ai-tools/${tool.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path, type: "article" },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
 export default async function AiToolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getTool(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">AI tool not found yet</h1>
-        <Link href="/ai-tools" className="mt-6 inline-flex text-orange-300">Back to tools</Link>
-      </main>
-    );
+    notFound();
   }
 
   const tool = res.data;
-  const link = tool.affiliate_url || tool.website_url;
+  const link = externalUrl(tool.affiliate_url) || externalUrl(tool.website_url);
   const shareText = buildToolShareText({ ...tool, path: `/ai-tools/${tool.slug}` });
+  const validFaqs = (tool.faqs || []).filter((faq) => faq.question && faq.answer);
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -66,12 +99,12 @@ export default async function AiToolDetailPage({ params }: { params: Promise<{ s
         name: tool.name,
         applicationCategory: tool.category,
         description: tool.seo_description || tool.description || tool.tagline,
-        offers: { "@type": "Offer", price: tool.pricing || "Free + paid", priceCurrency: "INR" },
-        aggregateRating: { "@type": "AggregateRating", ratingValue: tool.rating || 4.5, ratingCount: 25 },
+        url: absoluteUrl(`/ai-tools/${tool.slug}`),
+        ...(externalUrl(tool.website_url) ? { sameAs: externalUrl(tool.website_url) } : {}),
       },
-      ...(tool.faqs?.length ? [{
+      ...(validFaqs.length ? [{
         "@type": "FAQPage",
-        mainEntity: tool.faqs.map((faq) => ({
+        mainEntity: validFaqs.map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: { "@type": "Answer", text: faq.answer },
@@ -90,10 +123,14 @@ export default async function AiToolDetailPage({ params }: { params: Promise<{ s
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
         <article className="glass-panel rounded-3xl border border-white/10 p-6">
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="rounded-full bg-orange-500/10 px-4 py-2 text-orange-200">Rating {tool.rating ?? 4.5}/5</span>
+            {tool.rating != null && (
+              <span className="rounded-full bg-orange-500/10 px-4 py-2 text-orange-200">Rating {tool.rating}/5</span>
+            )}
             <span className="rounded-full bg-zinc-800 px-4 py-2 text-zinc-200">{tool.pricing || "Pricing varies"}</span>
+            {tool.reviewed_at ? <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-4 py-2 text-emerald-700"><ShieldCheck className="h-4 w-4" /> Human reviewed</span> : null}
           </div>
           <p className="mt-6 whitespace-pre-line text-sm leading-7 text-zinc-300">{tool.description}</p>
+          <SourceBlock sources={tool.source_urls || []} reviewedAt={tool.reviewed_at} />
           <ToolTrustPanel
             trustScore={tool.trust_score}
             trustBreakdown={tool.trust_breakdown}
@@ -130,6 +167,22 @@ export default async function AiToolDetailPage({ params }: { params: Promise<{ s
         </aside>
       </div>
     </main>
+  );
+}
+
+function SourceBlock({ sources, reviewedAt }: { sources: string[]; reviewedAt?: string | null }) {
+  const validSources = sources.map((source) => externalUrl(source)).filter((source): source is string => Boolean(source));
+  if (!validSources.length && !reviewedAt) return null;
+  return (
+    <section className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
+      <h2 className="flex items-center gap-2 text-base font-bold text-emerald-900"><ShieldCheck className="h-5 w-5" /> Editorial verification</h2>
+      {reviewedAt ? <p className="mt-2 text-xs text-emerald-800">Last human review: {new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(reviewedAt))}</p> : null}
+      {validSources.length ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {validSources.map((source, index) => <a key={source} href={source} target="_blank" rel="nofollow noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800">Source {index + 1} <ExternalLink className="h-3.5 w-3.5" /></a>)}
+        </div>
+      ) : null}
+    </section>
   );
 }
 

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { WhatsAppShareCard } from "@/components/share/WhatsAppShareCard";
 import { buildDailyBriefShareText } from "@/lib/share";
@@ -22,17 +23,19 @@ async function getBrief(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getBrief(slug);
+  if (!res) return { title: "Daily brief not found", robots: { index: false, follow: true } };
+  return { title: res.data.title, description: res.data.summary || "Pulsevian daily AI brief with practical updates and India impact.", alternates: { canonical: `/daily-ai-brief/${res.data.slug}` } };
+}
+
 export default async function DailyBriefDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getBrief(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Brief not found yet</h1>
-        <Link href="/daily-ai-brief" className="mt-6 inline-flex text-orange-300">Back to Daily Brief</Link>
-      </main>
-    );
+    notFound();
   }
 
   const brief = res.data;

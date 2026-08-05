@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props) {
     const res = await apiFetch<{ data: Author }>(`/authors/${slug}`, { revalidate: 120 });
     return {
       title: `${res.data.display_name} | Author Profile`,
-      description: res.data.bio || "Verified Global AI News author profile.",
+      description: res.data.bio || "Pulsevian author profile and published work.",
     };
   } catch {
     return { title: "Author" };

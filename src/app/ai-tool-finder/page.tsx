@@ -22,24 +22,11 @@ const audiences = ["creator", "student", "job seeker", "business", "developer", 
 const goals = ["content", "research", "resume", "design", "video", "coding", "marketing"];
 const budgets = ["free", "paid"];
 
-const starter: ToolResult[] = [
-  {
-    tool: { id: 1, name: "ChatGPT", slug: "chatgpt", category: "AI Writing", tagline: "Best all-round assistant for writing, learning, and content.", pricing: "Free + paid", best_for: ["Students", "Creators", "Business"] },
-    score: 92,
-    reasons: ["Strong general fit", "Works well for English prompts", "Useful for writing and learning"],
-  },
-  {
-    tool: { id: 2, name: "Perplexity", slug: "perplexity", category: "AI Search", tagline: "Research answers with sources.", pricing: "Free + paid", best_for: ["Research", "News tracking"] },
-    score: 88,
-    reasons: ["Great for research", "Useful source citations", "Good for comparison and news ideas"],
-  },
-];
-
 export default function AiToolFinderPage() {
   const [audience, setAudience] = useState("creator");
   const [goal, setGoal] = useState("content");
   const [budget, setBudget] = useState("free");
-  const [results, setResults] = useState<ToolResult[]>(starter);
+  const [results, setResults] = useState<ToolResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -59,9 +46,9 @@ export default function AiToolFinderPage() {
       });
       if (!res.ok) throw new Error("Finder failed");
       const data = await res.json();
-      setResults(data.recommendations?.length ? data.recommendations : starter);
+      setResults(data.recommendations || []);
     } catch {
-      setResults(starter);
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -98,7 +85,7 @@ export default function AiToolFinderPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-2xl font-bold">Recommended tools</h2>
-              <p className="mt-1 text-sm text-zinc-400">{searched ? `For ${audience} / ${goal} / ${budget}` : "Starter recommendations"}</p>
+              <p className="mt-1 text-sm text-zinc-400">{searched ? `For ${audience} / ${goal} / ${budget}` : "Choose your needs to get recommendations"}</p>
             </div>
             <a
               href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${typeof window !== "undefined" ? window.location.href : ""}`)}`}
@@ -110,6 +97,9 @@ export default function AiToolFinderPage() {
             </a>
           </div>
 
+          {searched && !loading && results.length === 0 && (
+            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-6 text-sm text-zinc-300">No verified match is available yet. Try a broader goal or budget.</div>
+          )}
           {results.map((result, index) => (
             <article key={`${result.tool.slug}-${index}`} className="glass-panel rounded-3xl border border-white/10 p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">

@@ -1,6 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Play, Sparkles } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import type { Metadata } from "next";
+import { mergeWithFallbackStories } from "@/lib/story-content";
+
+export const metadata: Metadata = { title: "AI Web Stories", description: "Short, mobile-friendly visual guides to AI tools, workflows, and practical updates.", alternates: { canonical: "/web-stories" } };
 
 type WebStory = {
   id: number;
@@ -22,9 +27,9 @@ type ToolStory = {
 async function getStories() {
   try {
     const res = await apiFetch<{ data: WebStory[] }>("/web-stories", { revalidate: 120 });
-    return res.data;
+    return mergeWithFallbackStories(res.data);
   } catch {
-    return [];
+    return mergeWithFallbackStories([]);
   }
 }
 
@@ -87,8 +92,10 @@ export default async function WebStoriesPage() {
         <h2 className="mb-4 text-2xl font-bold text-white">Published stories</h2>
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stories.map((story) => (
-            <Link key={story.slug} href={`/web-stories/${story.slug}`} className="group aspect-[9/16] overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-5 transition hover:border-orange-400/50">
-              <div className="flex h-full flex-col justify-between">
+            <Link key={story.slug} href={`/web-stories/${story.slug}`} className="dark-surface group relative aspect-[9/16] overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-5 shadow-xl transition hover:-translate-y-1 hover:border-orange-400/50">
+              {story.cover_image ? <Image src={story.cover_image} alt="" fill className="object-cover transition duration-500 group-hover:scale-105" unoptimized /> : null}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/55 to-slate-950/10" />
+              <div className="relative flex h-full flex-col justify-between">
                 <div className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-200">Story</div>
                 <div>
                   <Play className="mb-4 h-8 w-8 text-orange-300" />

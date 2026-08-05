@@ -18,27 +18,12 @@ type LearningPath = {
   lessons_count?: number;
 };
 
-const starter: LearningPath[] = [
-  {
-    id: 1,
-    title: "Prompt Engineering for Global Creators",
-    slug: "prompt-engineering-global-creators",
-    category: "Prompt Engineering",
-    level: "beginner",
-    description: "Learn to write English prompts for YouTube, blogs, social media, and business workflows.",
-    outcomes: ["Better prompts", "Reusable templates", "Content workflows"],
-    audience: ["Creators", "Students", "Small business"],
-    duration_minutes: 35,
-    lessons_count: 3,
-  },
-];
-
 async function getPaths() {
   try {
     const res = await apiFetch<{ data: LearningPath[] }>("/learning-paths?per_page=24", { revalidate: 180 });
-    return res.data.length ? res.data : starter;
+    return res.data;
   } catch {
-    return starter;
+    return [];
   }
 }
 
@@ -52,13 +37,14 @@ export default async function LearnAiPage() {
           <BookOpen className="h-4 w-4" /> AI Learning
         </p>
         <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-tight text-white md:text-6xl">
-          Learn AI in English with practical paths and action steps
+          Learn AI with practical paths and action steps
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400">
           Prompt engineering, AI tools, jobs, creators, and business workflows. Short lessons built for repeat learning.
         </p>
       </section>
 
+      {!paths.length && <div className="rounded-3xl border border-white/10 bg-zinc-950 p-8 text-zinc-300">Learning paths are temporarily unavailable.</div>}
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {paths.map((path) => (
           <Link key={path.id} href={`/learn-ai/${path.slug}`} className="glass-panel group rounded-3xl border border-white/10 p-6 transition hover:-translate-y-1 hover:border-orange-400/50">

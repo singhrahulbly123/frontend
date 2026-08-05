@@ -23,14 +23,15 @@ interface AdPlacementResponse {
   lazy_load: boolean;
 }
 
-export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px", label = "Sponsored content", className }: AdSlotProps) {
+export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px", className }: AdSlotProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(!lazy);
   const [placement, setPlacement] = useState<AdPlacementResponse | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [hasTrackedImpression, setHasTrackedImpression] = useState(false);
 
   useEffect(() => {
-    if (!lazy || !ref.current) return;
+    if (!lazy || !isLoaded || !ref.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -44,7 +45,7 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
 
     observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [lazy]);
+  }, [isLoaded, lazy]);
 
   useEffect(() => {
     const loadPlacement = async () => {
@@ -57,11 +58,16 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
         );
 
         const placement = response.data?.[0];
-        if (placement) {
+        const isDemoPlacement = placement?.ad_code
+          ? /loading the most relevant ad|ad reserved|sponsored story placement|helpful tools sponsor/i.test(placement.ad_code)
+          : false;
+        if (placement?.ad_code && !isDemoPlacement) {
           setPlacement(placement);
         }
       } catch {
-        // no-op, keep placeholder intact
+        // Ads are optional; editorial content remains available if this request fails.
+      } finally {
+        setIsLoaded(true);
       }
     };
 
@@ -69,7 +75,7 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
   }, [pageType, slotKey]);
 
   useEffect(() => {
-    if (!isVisible || hasTrackedImpression) return;
+    if (!placement?.ad_code || !isVisible || hasTrackedImpression) return;
 
     const trackImpression = async () => {
       try {
@@ -91,7 +97,7 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
 
     trackImpression();
     setHasTrackedImpression(true);
-  }, [hasTrackedImpression, isVisible, pageType, placement?.revenue_channel, slotKey]);
+  }, [hasTrackedImpression, isVisible, pageType, placement?.ad_code, placement?.revenue_channel, slotKey]);
 
   const handleClick = async () => {
     try {
@@ -111,7 +117,9 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
     }
   };
 
-  const reservedWidth = placement?.reserved_width ?? null;
+  if (!isLoaded || !placement?.ad_code) return null;
+
+  const reservedWidth = placement.reserved_width ?? null;
   const reservedHeight = placement?.reserved_height ?? null;
   const aspectRatio = reservedWidth && reservedHeight ? `${reservedWidth} / ${reservedHeight}` : undefined;
 
@@ -126,14 +134,7 @@ export function AdSlot({ slotKey, pageType, lazy = true, estimatedHeight = "90px
       style={{ minHeight: reservedHeight ? `${reservedHeight}px` : estimatedHeight, aspectRatio }}
     >
       {isVisible ? (
-        placement?.ad_code ? (
-          <div className="flex h-full w-full items-center justify-center" dangerouslySetInnerHTML={{ __html: placement.ad_code }} />
-        ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-sm text-zinc-400">
-            <span className="font-semibold text-white">{label}</span>
-            <span>Loading the most relevant ad for this article.</span>
-          </div>
-        )
+        <div className="flex h-full w-full items-center justify-center" dangerouslySetInnerHTML={{ __html: placement.ad_code }} />
       ) : (
         <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-sm text-zinc-500">
           <span className="font-semibold">Ad reserved</span>

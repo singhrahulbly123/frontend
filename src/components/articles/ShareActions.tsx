@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy } from "lucide-react";
+import { absoluteUrl } from "@/lib/site";
 
 interface Props {
   title: string;
@@ -12,7 +13,7 @@ interface Props {
 export default function ShareActions({ title, slug }: Props) {
   const [status, setStatus] = useState<string | null>(null);
 
-  const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/news/${slug}`;
+  const shareUrl = absoluteUrl(`/news/${slug}`);
 
   const copyLink = async () => {
     try {

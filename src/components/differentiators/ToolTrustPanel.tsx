@@ -1,8 +1,8 @@
 type TrustBreakdown = Record<string, number>;
 
 export function ToolTrustPanel({
-  trustScore = 70,
-  opportunityScore = 70,
+  trustScore,
+  opportunityScore,
   opportunitySummary,
   trustBreakdown,
 }: {
@@ -12,18 +12,19 @@ export function ToolTrustPanel({
   trustBreakdown?: TrustBreakdown | null;
 }) {
   const rows = Object.entries(trustBreakdown ?? {});
+  if (trustScore == null && opportunityScore == null && !opportunitySummary && rows.length === 0) return null;
 
   return (
     <section className="mt-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
+        {trustScore != null && <div>
           <p className="text-sm uppercase tracking-[0.2em] text-emerald-300">Tool Trust Score</p>
           <p className="mt-3 text-4xl font-extrabold text-white">{trustScore}/100</p>
-        </div>
-        <div>
+        </div>}
+        {opportunityScore != null && <div>
           <p className="text-sm uppercase tracking-[0.2em] text-orange-300">AI Opportunity Score</p>
           <p className="mt-3 text-4xl font-extrabold text-white">{opportunityScore}/100</p>
-        </div>
+        </div>}
       </div>
       {opportunitySummary && <p className="mt-5 text-sm leading-7 text-zinc-300">{opportunitySummary}</p>}
       {rows.length > 0 && (

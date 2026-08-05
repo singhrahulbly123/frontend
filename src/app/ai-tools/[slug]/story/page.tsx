@@ -1,7 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { WhatsAppShareCard } from "@/components/share/WhatsAppShareCard";
+import { absoluteUrl } from "@/lib/site";
 
 type StoryPage = {
   type?: string;
@@ -29,21 +32,25 @@ async function getToolStory(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getToolStory(slug);
+  if (!res) return { title: "Tool story not found", robots: { index: false, follow: true } };
+  const story = res.data;
+  const canonical = story.seo?.canonical_path || `/ai-tools/${slug}/story`;
+  return { title: story.seo?.title || story.title, description: story.seo?.description || `A quick visual guide to this AI tool.`, alternates: { canonical } };
+}
+
 export default async function ToolStoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getToolStory(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Tool story not found yet</h1>
-        <Link href="/ai-tools" className="mt-6 inline-flex text-orange-300">Back to AI tools</Link>
-      </main>
-    );
+    notFound();
   }
 
   const story = res.data;
-  const shareText = `${story.title}\n\nSwipe through pricing, use cases, pros, cons, and alternatives.\n\n${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/ai-tools/${slug}/story`;
+  const shareText = `${story.title}\n\nSwipe through pricing, use cases, pros, cons, and alternatives.\n\n${absoluteUrl(`/ai-tools/${slug}/story`)}`;
   const schema = {
     "@context": "https://schema.org",
     "@type": "Article",

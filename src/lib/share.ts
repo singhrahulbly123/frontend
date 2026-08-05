@@ -1,4 +1,4 @@
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 function absoluteUrl(path: string) {
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -37,7 +37,7 @@ export function buildToolShareText(tool: {
     tool.pricing ? `Pricing: ${tool.pricing}` : null,
     tool.rating ? `Rating: ${tool.rating}/5` : null,
     `Read review: ${absoluteUrl(tool.path)}`,
-    "Global AI News",
+    SITE_NAME,
   ]);
 }
 
@@ -56,7 +56,7 @@ export function buildPromptShareText(prompt: {
     "Prompt:",
     excerpt(prompt.prompt, 260),
     `Open prompt: ${absoluteUrl(prompt.path)}`,
-    "Global AI News",
+    SITE_NAME,
   ]);
 }
 
@@ -76,8 +76,8 @@ export function buildDailyBriefShareText(brief: {
     brief.summary ? excerpt(brief.summary, 180) : null,
     updates.length ? "Top updates:" : null,
     ...updates,
-    brief.impact_india ? `Global impact: ${excerpt(brief.impact_india, 180)}` : null,
+    brief.impact_india ? `India impact: ${excerpt(brief.impact_india, 180)}` : null,
     `Read full brief: ${absoluteUrl(brief.path)}`,
-    "Global AI News",
+    SITE_NAME,
   ]);
 }

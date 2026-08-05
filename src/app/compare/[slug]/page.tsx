@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, HelpCircle, Trophy } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
@@ -30,17 +32,20 @@ async function getComparison(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getComparison(slug);
+  if (!res) return { title: "Comparison not found", robots: { index: false, follow: true } };
+  const item = res.data;
+  return { title: item.title, description: item.summary || `${item.tool_a} vs ${item.tool_b}: practical comparison, strengths, limitations, and best use cases.`, alternates: { canonical: `/compare/${item.slug}` } };
+}
+
 export default async function CompareDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getComparison(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Comparison not found yet</h1>
-        <Link href="/compare" className="mt-6 inline-flex text-orange-300">Back to comparisons</Link>
-      </main>
-    );
+    notFound();
   }
 
   const item = res.data;

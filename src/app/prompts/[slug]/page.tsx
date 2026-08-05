@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PromptCopyButton } from "@/components/prompts/PromptCopyButton";
 import { BookmarkButton } from "@/components/bookmarks/BookmarkButton";
 import { apiFetch } from "@/lib/api";
@@ -25,17 +27,21 @@ async function getPrompt(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getPrompt(slug);
+  if (!res) return { title: "Prompt not found", robots: { index: false, follow: true } };
+  const prompt = res.data;
+  const description = prompt.use_case || `Copy-ready ${prompt.category} prompt for ${prompt.audience || "practical AI users"}.`;
+  return { title: prompt.title, description, alternates: { canonical: `/prompts/${prompt.slug}` } };
+}
+
 export default async function PromptDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getPrompt(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Prompt not found yet</h1>
-        <Link href="/prompts" className="mt-6 inline-flex text-orange-300">Back to prompts</Link>
-      </main>
-    );
+    notFound();
   }
 
   const prompt = res.data;

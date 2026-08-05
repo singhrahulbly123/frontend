@@ -20,18 +20,12 @@ type AiTool = {
   rating?: number;
 };
 
-const starterTools: AiTool[] = [
-  { id: 1, name: "ChatGPT", slug: "chatgpt", category: "AI Writing", tagline: "All-round AI assistant for students, creators, and businesses.", description: "Useful for explainers, emails, scripts, coding help, and research summaries.", pricing: "Free + paid", best_for: ["Students", "Creators", "Business"], rating: 4.8 },
-  { id: 2, name: "Perplexity", slug: "perplexity", category: "AI Search", tagline: "Research answers with cited sources.", description: "Strong tool for fast research, comparison, and source-backed summaries.", pricing: "Free + paid", best_for: ["Research", "News tracking"], rating: 4.7 },
-  { id: 3, name: "Canva AI", slug: "canva-ai", category: "Design", tagline: "Simple AI design suite for reels, thumbnails, posters, and social creatives.", description: "Low-friction visual content creation for global creators.", pricing: "Free + paid", best_for: ["YouTubers", "Instagram"], rating: 4.6 },
-];
-
 async function getTools() {
   try {
     const res = await apiFetch<{ data: AiTool[] }>("/ai-tools?per_page=48", { revalidate: 120 });
-    return res.data.length ? res.data : starterTools;
+    return res.data;
   } catch {
-    return starterTools;
+    return [];
   }
 }
 
@@ -40,37 +34,46 @@ export default async function AiToolsPage() {
   const categories = Array.from(new Set(tools.map((tool) => tool.category)));
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10">
-      <section className="mb-10">
-        <p className="text-sm uppercase tracking-[0.24em] text-orange-400">AI Tools Directory</p>
-        <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-tight text-white md:text-6xl">
+    <main className="page-shell py-7 sm:py-10">
+      <section className="relative mb-8 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/80 p-6 shadow-[0_26px_70px_-40px_rgba(15,23,42,0.3)] sm:mb-10 sm:p-9 lg:p-11">
+        <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-orange-200/35 blur-3xl" />
+        <p className="eyebrow relative">AI Tools Directory</p>
+        <h1 className="relative mt-4 max-w-4xl text-4xl font-black leading-[1.06] text-white sm:text-5xl md:text-6xl">
           Best AI tools for creators, students, jobs, and business
         </h1>
-        <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400">
-          Practical AI tools with global English use cases, pricing, pros, cons, and alternatives. Pick tools that actually save time or make money.
+        <p className="relative mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+          Practical AI tools with India-focused use cases, pricing, pros, cons, and alternatives. Ratings appear only when supporting data is available.
         </p>
       </section>
 
       <div className="mb-8 flex flex-wrap gap-2">
         {categories.map((category) => (
-          <span key={category} className="rounded-full border border-white/10 bg-zinc-900 px-4 py-2 text-sm text-zinc-300">{category}</span>
+          <span key={category} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-300 shadow-sm">{category}</span>
         ))}
       </div>
 
       <AdSlot slotKey="ai_tools_top" pageType="utility" estimatedHeight="120px" className="mb-8" />
 
+      {!tools.length && (
+        <div className="premium-card p-6 text-zinc-300 sm:p-8">
+          Tool directory is temporarily unavailable. Please try again shortly.
+        </div>
+      )}
+
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tools.map((tool) => (
-          <article key={tool.id} className="glass-panel rounded-3xl border border-white/10 p-6 transition hover:-translate-y-1 hover:border-orange-400/50">
+          <article key={tool.id} className="premium-card group p-5 hover:-translate-y-1 sm:p-6">
             <Link href={`/ai-tools/${tool.slug}`} className="block">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-orange-400">{tool.category}</p>
                   <h2 className="mt-3 text-2xl font-bold text-white">{tool.name}</h2>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-orange-500/10 px-3 py-1 text-sm text-orange-200">
-                  <Star className="h-4 w-4 fill-orange-400 text-orange-400" /> {tool.rating ?? 4.5}
-                </div>
+                {tool.rating != null && (
+                  <div className="flex items-center gap-1 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-sm font-bold text-orange-700">
+                    <Star className="h-4 w-4 fill-orange-400 text-orange-400" /> {tool.rating}
+                  </div>
+                )}
               </div>
               <p className="mt-4 text-sm font-medium text-zinc-200">{tool.tagline}</p>
               <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">{tool.description}</p>

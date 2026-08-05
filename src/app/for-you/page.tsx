@@ -2,6 +2,9 @@ import Link from "next/link";
 import { BriefcaseBusiness, GraduationCap, Lightbulb, PenTool } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type { Article } from "@/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Personalized AI Feed", description: "AI content matched to your role and goals.", robots: { index: false, follow: true }, alternates: { canonical: "/for-you" } };
 
 type Role = "student" | "creator" | "job_seeker" | "business";
 
@@ -87,9 +90,9 @@ export default async function ForYouPage({ searchParams }: { searchParams: Promi
               <h2 className="mt-4 text-2xl font-bold text-white">{title}</h2>
               {description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">{description}</p>}
               <div className="mt-5 flex flex-wrap gap-2 text-xs text-zinc-300">
-                <span className="rounded-full bg-zinc-800 px-3 py-1">Opportunity {score ?? 70}/100</span>
-                {entry.type === "article" && <span className="rounded-full bg-zinc-800 px-3 py-1">India impact {entry.item.india_impact_score ?? 70}/100</span>}
-                {entry.type === "tool" && <span className="rounded-full bg-zinc-800 px-3 py-1">Trust {entry.item.trust_score ?? 70}/100</span>}
+                {score != null && <span className="rounded-full bg-zinc-800 px-3 py-1">Opportunity {score}/100</span>}
+                {entry.type === "article" && entry.item.india_impact_score != null && <span className="rounded-full bg-zinc-800 px-3 py-1">India impact {entry.item.india_impact_score}/100</span>}
+                {entry.type === "tool" && entry.item.trust_score != null && <span className="rounded-full bg-zinc-800 px-3 py-1">Trust {entry.item.trust_score}/100</span>}
               </div>
             </Link>
           );

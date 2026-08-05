@@ -1,50 +1,55 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Geist } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MobileNav } from "@/components/layout/MobileNav";
 import PwaInstallPrompt from "@/components/pwa/PwaInstallPrompt";
-import HeatmapTracker from "@/components/analytics/HeatmapTracker";
-import ViewabilityTracker from "@/components/analytics/ViewabilityTracker";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Global AI News",
-    template: "%s | Global AI News",
+    default: "Pulsevian: Practical AI Tools and Workflows for India",
+    template: "%s | Pulsevian",
   },
-  description:
-    "Global English AI news platform optimized for Google Discover, SEO, and trusted human-reviewed journalism.",
+  description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Global AI News",
+    siteName: SITE_NAME,
+    title: "Pulsevian: Practical AI Tools and Workflows for India",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
   },
-  robots: { index: true, follow: true },
-  alternates: {
-    languages: {
-      en: "/",
+  twitter: {
+    card: "summary_large_image",
+    title: "Pulsevian: Practical AI Tools and Workflows for India",
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/globe.svg",
-    apple: "/globe.svg",
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
     other: [
-      { rel: "mask-icon", url: "/globe.svg", color: "#f97316" },
+      { rel: "mask-icon", url: "/pulsevian-logo.svg", color: "#f97316" },
     ],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050508",
+  themeColor: "#f7f8fb",
   width: "device-width",
   initialScale: 1,
 };
@@ -54,8 +59,8 @@ const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${geistSans.variable} font-sans antialiased pb-20 md:pb-0`}>
+    <html lang="en-IN">
+      <body className="light-theme font-sans antialiased pb-20 md:pb-0">
         {oneSignalAppId ? (
           <Script
             src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
@@ -71,8 +76,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         ) : null}
         <SiteHeader />
         <PwaInstallPrompt />
-        <HeatmapTracker />
-        <ViewabilityTracker />
         <main>{children}</main>
         <SiteFooter />
         <MobileNav />

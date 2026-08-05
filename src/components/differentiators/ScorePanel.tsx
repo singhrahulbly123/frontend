@@ -11,8 +11,9 @@ const toneClass = {
   blue: "border-blue-500/20 bg-blue-500/5 text-blue-300",
 };
 
-export function ScorePanel({ title, score = 70, summary, tone = "orange" }: ScorePanelProps) {
-  const normalized = Math.max(0, Math.min(100, Number(score ?? 70)));
+export function ScorePanel({ title, score, summary, tone = "orange" }: ScorePanelProps) {
+  if (score == null) return null;
+  const normalized = Math.max(0, Math.min(100, Number(score)));
 
   return (
     <section className={`rounded-2xl border p-5 ${toneClass[tone]}`}>

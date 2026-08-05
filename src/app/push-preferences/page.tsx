@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Bell } from "lucide-react";
 import PushNotificationButton from "@/components/push/PushNotificationButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Notification Preferences", description: "Choose the Pulsevian alerts you want to receive.", robots: { index: false, follow: true }, alternates: { canonical: "/push-preferences" } };
 
 export default function PushPreferencesPage() {
   return (
@@ -28,7 +31,7 @@ export default function PushPreferencesPage() {
             ["Creators", "AI Tools, Prompts, Daily Brief"],
             ["Students", "AI Learning, AI Jobs, Daily Brief"],
             ["Business", "AI Tools, Trending, Daily Brief"],
-            ["News readers", "Breaking, Trending, Global AI News"],
+            ["AI update readers", "Important updates, trending alerts, and breaking stories"],
           ].map(([label, desc]) => (
             <div key={label} className="rounded-2xl border border-white/10 bg-zinc-900 p-4 text-sm text-zinc-300">
               <p className="font-semibold text-white">{label}</p>

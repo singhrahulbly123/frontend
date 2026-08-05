@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 
 const TOPICS = [
-  { value: "global", label: "Global AI News" },
+  { value: "global", label: "Important AI Updates" },
   { value: "trending", label: "Trending Alerts" },
   { value: "breaking", label: "Breaking News" },
   { value: "ai_tools", label: "AI Tools" },
@@ -161,7 +161,7 @@ export default function PushNotificationButton() {
       </div>
 
       <p className="mt-4 text-sm leading-6 text-zinc-400">
-        Subscribe to global news, trending alerts, or breaking stories and stay updated with global English AI coverage.
+        Choose the AI tools, learning, jobs, prompt, and daily brief alerts that are useful to you.
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

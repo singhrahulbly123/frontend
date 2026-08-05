@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
@@ -24,17 +26,19 @@ async function getPath(slug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const res = await getPath(slug);
+  if (!res) return { title: "Learning path not found", robots: { index: false, follow: true } };
+  return { title: res.data.title, description: res.data.description || `Practical ${res.data.category} learning path for ${res.data.level} learners.`, alternates: { canonical: `/learn-ai/${res.data.slug}` } };
+}
+
 export default async function LearningPathPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const res = await getPath(slug);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Learning path not found yet</h1>
-        <Link href="/learn-ai" className="mt-6 inline-flex text-orange-300">Back to learning</Link>
-      </main>
-    );
+    notFound();
   }
 
   const path = res.data;

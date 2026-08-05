@@ -1,35 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { PolicyPage } from "@/components/content/PolicyPage";
+
+export const metadata: Metadata = { title: "Editorial Policy", description: "Pulsevian editorial, correction, sourcing, and AI-assistance standards.", alternates: { canonical: "/editorial-policy" } };
 
 export default function EditorialPolicyPage() {
   return (
-    <section className="mx-auto max-w-5xl px-4 py-16">
-      <div className="glass-panel rounded-3xl border border-white/10 bg-zinc-950/80 p-10">
-        <h1 className="text-4xl font-bold text-white">Editorial Policy</h1>
-        <p className="mt-6 text-zinc-400 leading-8">
-          Global AI News combines automated reporting with human review. Our editorial policy ensures that every story is verified, transparently sourced, and aligned with journalistic standards.
-        </p>
-        <div className="mt-10 space-y-6 text-zinc-300">
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Human Review</h2>
-            <p className="mt-3">All published stories are reviewed by human editors before they go live. This includes headline checks, source validation, and fact review.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Correction Policy</h2>
-            <p className="mt-3">If we discover an error, we correct it promptly and clearly. Corrections are logged on the article page and in our transparency reports.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">AI Transparency</h2>
-            <p className="mt-3">We label AI-assisted content and explain how our AI systems contribute to research, drafting, and summarization.</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">Source Reference Standards</h2>
-            <p className="mt-3">We cite sources for every factual claim and prioritize authoritative English-language global publishers.</p>
-          </div>
-        </div>
-        <div className="mt-10 text-sm text-zinc-500">
-          <Link href="/transparency" className="text-orange-400 hover:text-orange-300">Read our transparency statement</Link>
-        </div>
-      </div>
-    </section>
+    <PolicyPage title="Editorial Policy" intro="Pulsevian aims to publish practical, accurate, and clearly labelled AI resources. This policy explains the standard we expect before content is presented as reviewed or fact-checked.">
+      <section><h2>Human review labels</h2><p>AI may assist with research, drafting, translation, or formatting. We only describe a page as human-reviewed when an editor has checked its core claims, links, clarity, and disclosures.</p></section>
+      <section><h2>Sources and testing</h2><p>For factual claims we prefer official documentation, primary sources, and direct product pages. A tool review must distinguish hands-on observations from vendor claims and should state when a feature was not independently tested.</p></section>
+      <section><h2>Corrections</h2><p>Material errors should be corrected promptly. Where useful, the page should show an updated timestamp or correction note. Readers can report an error through the <Link href="/contact">contact page</Link>.</p></section>
+      <section><h2>Commercial independence</h2><p>Sponsorship or affiliate compensation does not guarantee favourable coverage or placement. Commercial relationships must be disclosed.</p></section>
+    </PolicyPage>
   );
 }

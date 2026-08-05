@@ -1,4 +1,7 @@
 import { MiniToolGenerator } from "@/components/mini-tools/MiniToolGenerator";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Free AI Resume Bullet Generator", description: "Turn basic experience into clear, ATS-friendly, impact-led resume bullets.", alternates: { canonical: "/tools/resume-bullet-generator" } };
 
 export default function ResumeBulletGeneratorPage() {
   return (

@@ -6,6 +6,9 @@ import { BookmarkButton } from "@/components/bookmarks/BookmarkButton";
 import { WhatsAppShareCard } from "@/components/share/WhatsAppShareCard";
 import { buildPromptShareText } from "@/lib/share";
 import { AdSlot } from "@/components/ads/AdSlot";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "AI Prompt Library for Work, Study and Content", description: "Copy-ready English, Hindi, and Hinglish prompts for creators, students, job seekers, and small businesses.", alternates: { canonical: "/prompts" } };
 
 export const revalidate = 120;
 
@@ -22,18 +25,12 @@ type PromptTemplate = {
   copy_count?: number;
 };
 
-const starterPrompts: PromptTemplate[] = [
-  { id: 1, title: "YouTube video script in English", slug: "youtube-video-script-english", category: "YouTube", audience: "Creators", language: "english", use_case: "Turn any topic into a retention-friendly YouTube script.", prompt: "Act as an English YouTube scriptwriter for a global audience. Topic: [TOPIC]. Write a hook, intro, 5 key points, examples, and a strong CTA.", tags: ["YouTube", "English", "Script"], copy_count: 0 },
-  { id: 2, title: "Resume bullet improver", slug: "resume-bullet-improver", category: "Jobs", audience: "Job seekers", language: "english", use_case: "Improve boring resume points with measurable impact.", prompt: "Rewrite these resume bullets with action verbs, numbers, and impact. Keep them ATS friendly: [PASTE BULLETS]", tags: ["Resume", "Jobs"], copy_count: 0 },
-  { id: 3, title: "Instagram reel caption", slug: "instagram-reel-caption", category: "Social", audience: "Creators", language: "english", use_case: "Create captions with hook, emotion, and share trigger.", prompt: "Write 10 English Instagram reel captions for this topic: [TOPIC]. Add hook, curiosity, and 5 relevant hashtags.", tags: ["Instagram", "Reels"], copy_count: 0 },
-];
-
 async function getPrompts() {
   try {
     const res = await apiFetch<{ data: PromptTemplate[] }>("/prompts?per_page=48", { revalidate: 120 });
-    return res.data.length ? res.data : starterPrompts;
+    return res.data;
   } catch {
-    return starterPrompts;
+    return [];
   }
 }
 
@@ -48,7 +45,7 @@ export default async function PromptsPage() {
           <Sparkles className="h-4 w-4" /> Prompt Library
         </p>
         <h1 className="mt-3 max-w-4xl text-4xl font-extrabold leading-tight text-white md:text-6xl">
-          Copy-ready AI prompts for global English creators, students, jobs, and business
+          Copy-ready AI prompts for Indian creators, students, jobs, and business
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400">
           Practical prompts that users can copy, share, and use instantly. This is your repeat-traffic utility layer.
@@ -63,6 +60,7 @@ export default async function PromptsPage() {
 
       <AdSlot slotKey="prompts_top" pageType="utility" estimatedHeight="120px" className="mb-8" />
 
+      {!prompts.length && <div className="rounded-3xl border border-white/10 bg-zinc-950 p-8 text-zinc-300">Prompts are temporarily unavailable.</div>}
       <section className="grid gap-4 lg:grid-cols-2">
         {prompts.map((item) => (
           <article key={item.id} className="glass-panel rounded-3xl border border-white/10 p-6">

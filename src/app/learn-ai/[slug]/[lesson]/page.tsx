@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
@@ -21,17 +23,19 @@ async function getLesson(pathSlug: string, lessonSlug: string) {
   }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; lesson: string }> }): Promise<Metadata> {
+  const { slug, lesson } = await params;
+  const res = await getLesson(slug, lesson);
+  if (!res) return { title: "Lesson not found", robots: { index: false, follow: true } };
+  return { title: res.data.title, description: res.data.summary || `${res.data.title}: practical lesson in ${res.path.title}.`, alternates: { canonical: `/learn-ai/${res.path.slug}/${res.data.slug}` } };
+}
+
 export default async function LessonPage({ params }: { params: Promise<{ slug: string; lesson: string }> }) {
   const { slug, lesson } = await params;
   const res = await getLesson(slug, lesson);
 
   if (!res) {
-    return (
-      <main className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Lesson not found yet</h1>
-        <Link href="/learn-ai" className="mt-6 inline-flex text-orange-300">Back to learning</Link>
-      </main>
-    );
+    notFound();
   }
 
   return (

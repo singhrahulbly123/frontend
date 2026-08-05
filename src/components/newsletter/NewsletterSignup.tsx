@@ -30,8 +30,8 @@ export function NewsletterSignup({ segment = "daily_ai_brief" }: { segment?: str
 
   return (
     <div className="rounded-3xl border border-orange-500/20 bg-orange-500/5 p-6">
-      <h3 className="text-xl font-bold text-white">Daily AI Digest</h3>
-      <p className="mt-2 text-sm leading-6 text-zinc-300">AI news, tools, prompts, aur learning links ek short email me.</p>
+      <h3 className="text-xl font-bold text-slate-950">Daily AI Digest</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">AI news, tools, prompts, aur learning links ek short email me.</p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" placeholder="email@example.com" className="min-w-0 flex-1 rounded-2xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-white" />
         <button onClick={subscribe} disabled={loading || !email} className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
