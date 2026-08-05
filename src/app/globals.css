@@ -210,12 +210,18 @@ body.light-theme .bg-orange-500.text-white:hover,
 body.light-theme button.bg-orange-500:hover,
 body.light-theme a.bg-orange-500:hover { background-color: var(--accent-hover) !important; }
 
+body.light-theme .dark-surface.text-white,
 body.light-theme .dark-surface .text-white { color: #ffffff !important; }
 body.light-theme .dark-surface .text-slate-300 { color: #cbd5e1 !important; }
 body.light-theme .dark-surface .text-slate-400 { color: #94a3b8 !important; }
 body.light-theme .dark-surface .text-zinc-300 { color: #cbd5e1 !important; }
 body.light-theme .dark-surface .text-zinc-400 { color: #94a3b8 !important; }
+body.light-theme .dark-surface .text-emerald-200 { color: #a7f3d0 !important; }
+body.light-theme .dark-surface .text-blue-200 { color: #bfdbfe !important; }
+body.light-theme .dark-surface .text-orange-200,
 body.light-theme .dark-surface .text-orange-300 { color: #fdba74 !important; }
+body.light-theme .dark-surface .border-white\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+body.light-theme .dark-surface .bg-white\/10 { background-color: rgba(255, 255, 255, 0.1) !important; }
 body.light-theme .brand-gradient { color: #ffffff !important; }
 body.light-theme .dark-surface .light-surface .text-white { color: var(--foreground) !important; }
 body.light-theme .dark-surface .light-surface .text-zinc-300 { color: #475467 !important; }
