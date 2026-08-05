@@ -47,7 +47,9 @@ await new Promise((resolve, reject) => {
   socket.addEventListener("error", reject, { once: true });
 });
 
-await Promise.all([send("Page.enable"), send("Runtime.enable"), send("Log.enable")]);
+await Promise.all([send("Page.enable"), send("Runtime.enable"), send("Log.enable"), send("Network.enable")]);
+await send("Network.setCacheDisabled", { cacheDisabled: true });
+await send("Network.clearBrowserCache");
 await send("Emulation.setDeviceMetricsOverride", { width: viewportWidth, height: viewportHeight, deviceScaleFactor: 1, mobile: viewportWidth < 768 });
 await send("Page.navigate", { url: pageUrl });
 await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -74,6 +76,7 @@ const pageState = await send("Runtime.evaluate", {
       h1: (() => { const node = document.querySelector('h1'); if (!node) return null; const style = getComputedStyle(node); return { fontSize: style.fontSize, lineHeight: style.lineHeight, fontWeight: style.fontWeight }; })(),
       brandMark: (() => { const node = document.querySelector('.brand-gradient'); if (!node) return null; const style = getComputedStyle(node); return { width: style.width, height: style.height, background: style.backgroundImage, color: style.color }; })(),
       primaryButton: (() => { const node = document.querySelector('a.bg-orange-700'); if (!node) return null; const style = getComputedStyle(node); return { background: style.backgroundColor, color: style.color, height: style.height }; })()
+      ,footer: (() => { const node = document.querySelector('footer'); if (!node) return null; const style = getComputedStyle(node); return { className: node.className, background: style.backgroundImage, backgroundColor: style.backgroundColor, color: style.color, opacity: style.opacity, filter: style.filter }; })()
     },
     headings: Array.from(document.querySelectorAll('h1,h2,h3')).slice(0, 8).map((node) => ({ text: node.textContent?.trim(), color: getComputedStyle(node).color })),
     cards: Array.from(document.querySelectorAll('.glass-panel')).slice(0, 5).map((node) => ({ background: getComputedStyle(node).backgroundColor, color: getComputedStyle(node).color }))
